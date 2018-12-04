@@ -100,6 +100,7 @@ const Picker = createReactClass({
             PropTypes.object,
             PropTypes.array,
         ]),
+        setDefaultValue:PropTypes.func,
         align: PropTypes.object,
     },
     getDefaultProps() {
@@ -286,6 +287,9 @@ const Picker = createReactClass({
                 inputValue = propsVaule[0] + "至" + propsVaule[1]
                 rangeValue = [moment(propsVaule[0]), moment(propsVaule[1])]
             }
+        }
+        if (inputValue.length==0){
+            inputValue="请选择时间范围"
         }
         let rangeHtml1 = (<RangeHtml submit ={this.submit} value={propsVaule} close={this.closeButton}/>)
         // popup={rangeHtml(rangeValue,this.submit,this.closeButton,this.setValue)}

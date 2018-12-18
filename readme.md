@@ -26,5 +26,6 @@ ReactDOM.render(
     }
 
 ```
-![image][https://github.com/cupyong/jk_calendar_cn/blob/master/ex.jpg?raw=true]
+ ![image](https://github.com/cupyong/jk_calendar_cn/blob/master/ex.jpg?raw=true)
+
 

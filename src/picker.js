@@ -102,6 +102,7 @@ const Picker = createReactClass({
         ]),
         setDefaultValue:PropTypes.func,
         align: PropTypes.object,
+        dataType:PropTypes.any,
     },
     getDefaultProps() {
         return {
@@ -291,7 +292,7 @@ const Picker = createReactClass({
         if (inputValue.length==0){
             inputValue="请选择时间范围"
         }
-        let rangeHtml1 = (<RangeHtml submit ={this.submit} value={propsVaule} close={this.closeButton}/>)
+        let rangeHtml1 = (<RangeHtml submit ={this.submit} value={propsVaule} close={this.closeButton} dataType={this.props.dataType}/>)
         // popup={rangeHtml(rangeValue,this.submit,this.closeButton,this.setValue)}
         return <Trigger
             popup={rangeHtml1}

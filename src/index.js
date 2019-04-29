@@ -100,7 +100,7 @@ const Picker = createReactClass({
             PropTypes.object,
             PropTypes.array,
         ]),
-        setDefaultValue:PropTypes.func,
+        setDefaultValue: PropTypes.func,
         align: PropTypes.object,
     },
     getDefaultProps() {
@@ -254,16 +254,16 @@ const Picker = createReactClass({
     submit(value) {
         this.props.submit(value)
         this.setState({
-            value:value
+            value: value
         })
         this.close()
     },
     closeButton() {
         this.close()
     },
-    setValue(value){
+    setValue(value) {
         this.setState({
-            value:value
+            value: value
         })
 
     },
@@ -279,7 +279,7 @@ const Picker = createReactClass({
             defaultValue,
     } = props;
         const state = this.state;
-        let propsVaule =state.value||this.props.value
+        let propsVaule = state.value || this.props.value
         let inputValue = ""
         let rangeValue = "";
         if (propsVaule instanceof Array) {
@@ -288,10 +288,10 @@ const Picker = createReactClass({
                 rangeValue = [moment(propsVaule[0]), moment(propsVaule[1])]
             }
         }
-        if (inputValue.length==0){
-            inputValue="请选择时间范围"
+        if (inputValue.length == 0) {
+            inputValue = "请选择时间范围"
         }
-        let rangeHtml1 = (<RangeHtml submit ={this.submit} value={propsVaule} close={this.closeButton}/>)
+        let rangeHtml1 = (<RangeHtml submit={this.submit} value={propsVaule} close={this.closeButton} />)
         // popup={rangeHtml(rangeValue,this.submit,this.closeButton,this.setValue)}
         return <Trigger
             popup={rangeHtml1}
@@ -312,7 +312,7 @@ const Picker = createReactClass({
             <div className="report-date-picker-wrap">
                 <span className="iconfont icon-rili"></span>
                 <input id="inputDate" type="text" className="form-control active" readOnly="readonly"
-                    value={inputValue} 
+                    value={inputValue}
                 />
             </div>
         </Trigger>

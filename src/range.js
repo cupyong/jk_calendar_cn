@@ -29,6 +29,7 @@ import 'moment/locale/zh-cn';
 // import 'moment/locale/en-gb';
 import Trigger from 'rc-trigger';
 import './index.css'
+import { fail } from 'assert';
 // import { aa, bb } from 'test';
 
 // const cn = location.search.indexOf('cn') !== -1;
@@ -65,10 +66,11 @@ function newArray(start, end) {
 }
 
 function disabledDate(current) {
-    const date = moment();
+    const date = moment(Date.now() + 24 * 60 * 60 * 1000);
     date.hour(0);
     date.minute(0);
     date.second(0);
+    // return current.isAfter(date);  // can not select days before today
     return current.isBefore(date);  // can not select days before today
 }
 
@@ -184,19 +186,41 @@ const rangeHtml1 = createReactClass({
         date.push(moment().subtract('days', 1).format('YYYY-MM-DD'))
         return date
     },
+    getForward30Days() {
+        let date = []
+        date.push(moment().add('days', 1).format('YYYY-MM-DD'))
+        date.push(moment().add('days', 30).format('YYYY-MM-DD'))
+        return date
+    },
     getLast7Days() {
         let date = []
         date.push(moment().subtract('days', 7).format('YYYY-MM-DD'))
         date.push(moment().subtract('days', 1).format('YYYY-MM-DD'))
         return date
     },
+    getForward7Days() {
+        let date = []
+        date.push(moment().add('days', 1).format('YYYY-MM-DD'))
+        date.push(moment().add('days', 7).format('YYYY-MM-DD'))
+        return date
+    },
     getLastWeekDays() {
         let date = []
         let weekOfday = parseInt(moment().format('d')) // 计算今天是这周第几天  周日为一周中的第一天
         let start = moment().subtract(weekOfday + 6, 'days').format('YYYY-MM-DD') // 周一日期
-        let end = moment().subtract(weekOfday , 'days').format('YYYY-MM-DD') // 周日日期
+        let end = moment().subtract(weekOfday, 'days').format('YYYY-MM-DD') // 周日日期
         date.push(start)
         date.push(end)
+        return date
+    },
+    getForwardWeekDays() {
+        let date = []
+        let weekOfday = parseInt(moment().format('d')) // 计算今天是这周第几天  周日为一周中的第一天
+        let start = moment().add(7 - weekOfday, 'days').format('YYYY-MM-DD') // 周一日期
+        let end = moment().add(13 - weekOfday, 'days').format('YYYY-MM-DD') // 周日日期
+        date.push(start)
+        date.push(end)
+        console.log(date)
         return date
     },
     getLastMonthDays() {
@@ -207,11 +231,19 @@ const rangeHtml1 = createReactClass({
         date.push(end)
         return date
     },
+    getForwardMonthDays() {
+        let date = []
+        let start = moment().add('month', 1).format('YYYY-MM') + '-01'
+        let end = moment(start).add('month', -1).add('days', -1).format('YYYY-MM-DD')
+        date.push(start)
+        date.push(end)
+        return date
+    },
     getCurrWeekDays() {
         let date = []
         let weekOfday = parseInt(moment().format('d')) // 计算今天是这周第几天 周日为一周中的第一天
-        let start = moment().subtract(weekOfday-1, 'days').format('YYYY-MM-DD') // 周一日期
-        let end = moment().add(7 - weekOfday , 'days').format('YYYY-MM-DD') // 周日日期
+        let start = moment().subtract(weekOfday - 1, 'days').format('YYYY-MM-DD') // 周一日期
+        let end = moment().add(7 - weekOfday, 'days').format('YYYY-MM-DD') // 周日日期
         date.push(start)
         date.push(end)
         return date
@@ -227,23 +259,87 @@ const rangeHtml1 = createReactClass({
     shortcut() {
         let yesterday = [moment().subtract(1, 'days').format('YYYY-MM-DD'), moment().subtract(1, 'days').format('YYYY-MM-DD')]
         let today = [moment().format('YYYY-MM-DD'), moment().format('YYYY-MM-DD')]
+
         let LastWeekDays = this.getLastWeekDays()
         let CurrWeekDays = this.getCurrWeekDays()
         let LastMonthDays = this.getLastMonthDays()
         let CurrMonthDays = this.getCurrMonthDays()
         let Last7Days = this.getLast7Days()
         let Last30Days = this.getLast30Days()
-        return [yesterday, today, LastWeekDays, CurrWeekDays, LastMonthDays, CurrMonthDays, Last7Days, Last30Days]
+
+        let tomorrow = [moment().add(1, 'days').format('YYYY-MM-DD'), moment().add(1, 'days').format('YYYY-MM-DD')]
+        let forward7Days = this.getForward7Days()
+        let forward30Days = this.getForward30Days()
+        let forwardWeekDays = this.getForwardWeekDays()
+        let forwardMonthDays = this.getCurrWeekDays()
+
+        return [yesterday, today, LastWeekDays, CurrWeekDays, LastMonthDays, CurrMonthDays, Last7Days, Last30Days,
+            tomorrow, forwardWeekDays, forwardMonthDays, forward7Days, forward30Days]
     },
     setShortcut(value) {
-        this.setState({value:value})
+        this.setState({ value: value })
         this.props.submit(value)
     },
-    getSelectClassName(value){
-        if(value[0]==this.state.value[0]&&value[1]==this.state.value[1]){
+    getSelectClassName(value) {
+        if (value[0] == this.state.value[0] && value[1] == this.state.value[1]) {
             return "active"
         }
         return ""
+    },
+    disabledDate(current) {
+        if (this.props.dataType == 1) {
+            const date = moment();
+            date.hour(0);
+            date.minute(0);
+            date.second(0);
+            return current.isAfter(date);
+        }
+        if (this.props.dataType == 2) {
+            const date = moment(Date.now() + 24 * 60 * 60 * 1000);
+            date.hour(0);
+            date.minute(0);
+            date.second(0);
+            return current.isBefore(date);
+        }
+        return false
+    },
+    leftUl(type) {
+        let shortcut = this.shortcut()
+        if (type == 1) {
+            return (
+                <ul>
+                    <li className={this.getSelectClassName(shortcut[0])} onClick={() => { this.setShortcut(shortcut[0]) }}>昨日</li>
+                    <li className={this.getSelectClassName(shortcut[2])} onClick={() => { this.setShortcut(shortcut[2]) }}>上周</li>
+                    <li className={this.getSelectClassName(shortcut[4])} onClick={() => { this.setShortcut(shortcut[4]) }}>上月</li>
+                    <li className={this.getSelectClassName(shortcut[6])} onClick={() => { this.setShortcut(shortcut[6]) }}>过去 7 天</li>
+                    <li className={this.getSelectClassName(shortcut[7])} onClick={() => { this.setShortcut(shortcut[7]) }}>过去 30 天</li>
+                </ul>
+            )
+        }
+        if (type == 2) {
+            return (
+                <ul>
+                    <li className={this.getSelectClassName(shortcut[0])} onClick={() => { this.setShortcut(shortcut[8]) }}>明天</li>
+                    <li className={this.getSelectClassName(shortcut[1])} onClick={() => { this.setShortcut(shortcut[9]) }}>下周</li>
+                    <li className={this.getSelectClassName(shortcut[2])} onClick={() => { this.setShortcut(shortcut[10]) }}>下月</li>
+                    <li className={this.getSelectClassName(shortcut[6])} onClick={() => { this.setShortcut(shortcut[11]) }}>未来 7 天</li>
+                    <li className={this.getSelectClassName(shortcut[7])} onClick={() => { this.setShortcut(shortcut[12]) }}>未来 30 天</li>
+                </ul>
+            )
+        }
+        return (
+            <ul>
+                <li className={this.getSelectClassName(shortcut[0])} onClick={() => { this.setShortcut(shortcut[0]) }}>昨日</li>
+                <li className={this.getSelectClassName(shortcut[1])} onClick={() => { this.setShortcut(shortcut[1]) }}>今日</li>
+                <li className={this.getSelectClassName(shortcut[2])} onClick={() => { this.setShortcut(shortcut[2]) }}>上周</li>
+                <li className={this.getSelectClassName(shortcut[3])} onClick={() => { this.setShortcut(shortcut[3]) }}>本周</li>
+                <li className={this.getSelectClassName(shortcut[4])} onClick={() => { this.setShortcut(shortcut[4]) }}>上月</li>
+                <li className={this.getSelectClassName(shortcut[5])} onClick={() => { this.setShortcut(shortcut[5]) }}>本月</li>
+                <li className={this.getSelectClassName(shortcut[6])} onClick={() => { this.setShortcut(shortcut[6]) }}>过去 7 天</li>
+                <li className={this.getSelectClassName(shortcut[7])} onClick={() => { this.setShortcut(shortcut[7]) }}>过去 30 天</li>
+            </ul>
+        )
+
     },
     render() {
         let rangeValue = [now, now.clone().add(1, 'days')]
@@ -255,23 +351,12 @@ const rangeHtml1 = createReactClass({
             }
         }
         let inputValue = this.format(rangeValue[0]) + "至" + this.format(rangeValue[1])
-        
-        let shortcut = this.shortcut()
         return (
             <div className="daterangepicker">
                 <div className="title"><div className="real-time">{inputValue}</div></div>
                 <div className="calendar-wrap" style={{ margin: 10, display: "flex" }}>
                     <div className="ranges">
-                        <ul>
-                            <li className={this.getSelectClassName(shortcut[0])}  onClick={() => { this.setShortcut(shortcut[0]) }}>昨日</li>
-                            <li className={this.getSelectClassName(shortcut[1])}  onClick={() => { this.setShortcut(shortcut[1]) }}>今日</li>
-                            <li className={this.getSelectClassName(shortcut[2])}  onClick={() => { this.setShortcut(shortcut[2]) }}>上周</li>
-                            <li className={this.getSelectClassName(shortcut[3])}  onClick={() => { this.setShortcut(shortcut[3]) }}>本周</li>
-                            <li className={this.getSelectClassName(shortcut[4])}  onClick={() => { this.setShortcut(shortcut[4]) }}>上月</li>
-                            <li className={this.getSelectClassName(shortcut[5])}  onClick={() => { this.setShortcut(shortcut[5]) }}>本月</li>
-                            <li className={this.getSelectClassName(shortcut[6])}  onClick={() => { this.setShortcut(shortcut[6]) }}>过去 7 天</li>
-                            <li className={this.getSelectClassName(shortcut[7])}  onClick={() => { this.setShortcut(shortcut[7]) }}>过去 30 天</li>
-                        </ul>
+                        {this.leftUl(this.props.dataType)}
                     </div>
                     <RangeCalendar
                         showWeekNumber={false}
@@ -279,6 +364,7 @@ const rangeHtml1 = createReactClass({
                         defaultSelectedValue={rangeValue}
                         locale={zhCN}
                         disabledTime={disabledTime}
+                        disabledDate={this.disabledDate}
                         showToday={false}
                         onOk={onOk}
                         onChange={this.onStandaloneChange}

@@ -40,6 +40,7 @@ const Test = createReactClass({
       console.log(this.state.value)
         return <Picker
             defaultValue={this.state.value}
+            dataType={2}
             submit={submit}
         >
         </Picker>

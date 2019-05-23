@@ -65,17 +65,16 @@ function newArray(start, end) {
     return result;
 }
 
-function disabledDate(current) {
-    const date = moment(Date.now() + 24 * 60 * 60 * 1000);
-    date.hour(0);
-    date.minute(0);
-    date.second(0);
-    // return current.isAfter(date);  // can not select days before today
-    return current.isBefore(date);  // can not select days before today
-}
+// function disabledDate(current) {
+//     const date = moment(Date.now() + 24 * 60 * 60 * 1000);
+//     date.hour(0);
+//     date.minute(0);
+//     date.second(0);
+//     // return current.isAfter(date);  // can not select days before today
+//     return current.isBefore(date);  // can not select days before today
+// }
 
 function disabledTime(time, type) {
-    console.log('disabledTime', time, type);
     if (type === 'start') {
         return {
             disabledHours() {
@@ -130,12 +129,12 @@ function isValidRange(v) {
 // }
 
 function onStandaloneSelect(value) {
-    console.log('onSelect');
-    console.log(format(value[0]), format(value[1]));
+    // console.log('onSelect');
+    // console.log(format(value[0]), format(value[1]));
 }
 
 function onOk(date) {
-    console.log('onSelect');
+    // console.log('onSelect');
 }
 
 const rangeHtml1 = createReactClass({
@@ -168,7 +167,7 @@ const rangeHtml1 = createReactClass({
         return v ? v.format('YYYY-MM-DD') : '';
     },
     onStandaloneChange(value) {
-        console.log('onChange');
+        // console.log('onChange');
         if (value[0] && value[1]) {
             this.setState({
                 value: [this.format(value[0]), this.format(value[1])]
@@ -220,7 +219,7 @@ const rangeHtml1 = createReactClass({
         let end = moment().add(13 - weekOfday, 'days').format('YYYY-MM-DD') // 周日日期
         date.push(start)
         date.push(end)
-        console.log(date)
+        // console.log(date)
         return date
     },
     getLastMonthDays() {
@@ -234,7 +233,7 @@ const rangeHtml1 = createReactClass({
     getForwardMonthDays() {
         let date = []
         let start = moment().add('month', 1).format('YYYY-MM') + '-01'
-        let end = moment(start).add('month', -1).add('days', -1).format('YYYY-MM-DD')
+        let end = moment(start).add('month', 1).add('days', -1).format('YYYY-MM-DD')
         date.push(start)
         date.push(end)
         return date
@@ -271,7 +270,7 @@ const rangeHtml1 = createReactClass({
         let forward7Days = this.getForward7Days()
         let forward30Days = this.getForward30Days()
         let forwardWeekDays = this.getForwardWeekDays()
-        let forwardMonthDays = this.getCurrWeekDays()
+        let forwardMonthDays = this.getForwardMonthDays()
 
         return [yesterday, today, LastWeekDays, CurrWeekDays, LastMonthDays, CurrMonthDays, Last7Days, Last30Days,
             tomorrow, forwardWeekDays, forwardMonthDays, forward7Days, forward30Days]

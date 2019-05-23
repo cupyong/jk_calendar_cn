@@ -277,6 +277,7 @@ const Picker = createReactClass({
             dropdownClassName,
             transitionName, children,
             defaultValue,
+            dataType
     } = props;
         const state = this.state;
         let propsVaule = state.value || this.props.value
@@ -291,7 +292,7 @@ const Picker = createReactClass({
         if (inputValue.length == 0) {
             inputValue = "请选择时间范围"
         }
-        let rangeHtml1 = (<RangeHtml submit={this.submit} value={propsVaule} close={this.closeButton} />)
+        let rangeHtml1 = (<RangeHtml submit={this.submit} value={propsVaule} close={this.closeButton} dataType={dataType} />)
         // popup={rangeHtml(rangeValue,this.submit,this.closeButton,this.setValue)}
         return <Trigger
             popup={rangeHtml1}

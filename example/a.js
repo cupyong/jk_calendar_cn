@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Picker from '../src/picker'
+import Picker from '../src/index'
 import createReactClass from 'create-react-class';
 
 function submit(value) {
